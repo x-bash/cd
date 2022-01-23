@@ -186,8 +186,6 @@ ___x_cmd_cd_iter()(
 
 mkdir -p "$___X_CMD_ROOT/.tmp/cd"
 
-# Inject recorder in the PS1
-
 ___x_cmd_cd_origin(){
     # `command cd` will not execute buildin command `cd` in zsh, refer: https://linux.die.net/man/1/zshbuiltins
     if [ -n "$ZSH_VERSION" ]; then
@@ -196,6 +194,7 @@ ___x_cmd_cd_origin(){
         command cd "$@"
     fi
 
+    # TODO: Inject history recorder in the PS1
     [ "${-#*i}${___X_CMD_FS_DEBUG}" = "$-" ] && return
     if [ -z "$___X_CMD_CD_HISTORY" ]; then
         ___X_CMD_CD_HISTORY="$(pwd | tee -a "$___X_CMD_ROOT/.tmp/cd/history")"
