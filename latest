@@ -157,7 +157,6 @@ END {
 }
 # EndSection
 
-# Section: iter
 ___x_cmd_cd_iter()(
     local root="$1"
     local iter_path="$2"
@@ -185,24 +184,6 @@ ___x_cmd_cd_iter()(
 )
 
 mkdir -p "$___X_CMD_ROOT/.tmp/cd"
-
-___x_cmd_cd_origin(){
-    # `command cd` will not execute buildin command `cd` in zsh, refer: https://linux.die.net/man/1/zshbuiltins
-    if [ -n "$ZSH_VERSION" ]; then
-        builtin cd "$@"
-    else
-        command cd "$@"
-    fi
-
-    # TODO: Inject history recorder in the PS1
-    [ "${-#*i}${___X_CMD_FS_DEBUG}" = "$-" ] && return
-    if [ -z "$___X_CMD_CD_HISTORY" ]; then
-        ___X_CMD_CD_HISTORY="$(pwd | tee -a "$___X_CMD_ROOT/.tmp/cd/history")"
-    else
-        ___X_CMD_CD_HISTORY="$(pwd | tee -a "$___X_CMD_ROOT/.tmp/cd/history")
-$___X_CMD_CD_HISTORY"
-    fi
-}
 
 ___X_CMD_AWK_CODE='{
     if (count > 200) { exit(exit_code); }
@@ -259,6 +240,25 @@ END {
     ' > "$___X_CMD_ROOT/.tmp/cd/history"
 }
 ___x_cmd_cd_load_history
+
+# Section: cd origin
+___x_cmd_cd_origin(){
+    # `command cd` will not execute buildin command `cd` in zsh, refer: https://linux.die.net/man/1/zshbuiltins
+    if [ -n "$ZSH_VERSION" ]; then
+        builtin cd "$@"
+    else
+        command cd "$@"
+    fi
+
+    # TODO: Inject history recorder in the PS1
+    [ "${-#*i}${___X_CMD_FS_DEBUG}" = "$-" ] && return
+    if [ -z "$___X_CMD_CD_HISTORY" ]; then
+        ___X_CMD_CD_HISTORY="$(pwd | tee -a "$___X_CMD_ROOT/.tmp/cd/history")"
+    else
+        ___X_CMD_CD_HISTORY="$(pwd | tee -a "$___X_CMD_ROOT/.tmp/cd/history")
+$___X_CMD_CD_HISTORY"
+    fi
+}
 
 # EndSection
 
