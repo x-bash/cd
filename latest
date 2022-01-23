@@ -190,6 +190,8 @@ END {
 ___x_cmd_cd_load_history
 
 # EndSection
+
+# Section: main
 ___x_cmd_cd(){
     local p="$1"
 
@@ -257,6 +259,7 @@ A
             ;;
     esac
 }
+# EndSection
 
 # Section: advise
 ___x_cmd_cd_advise_candidates(){
