@@ -6,13 +6,13 @@
 xrc os
 case "$(os name)" in
     darwin)
-        xrc x_fs/darwin
+        xrc cd/darwin
         ;;
     linux)
-        xrc x_fs/linux
+        xrc cd/linux
         ;;
     win)
-        xrc x_fs/win
+        xrc cd/win
         ;;
 esac
 
