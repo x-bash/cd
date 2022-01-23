@@ -21,6 +21,10 @@ ___x_cmd_cd_set_domain(){
     local varname="$1"
     local value="$2"
     # varname="$(printf "%s" "$1" | tr "[:lower:]" "[:upper:]")"  # optimized using bash/zsh inline
+
+    # xrc "$varname"
+    # if command "___x_cmd_$varname_cd" 2>/dev/
+
     eval "___X_CMD_CD_PWD_$varname=\"$value\""
     ___X_CMD_CD_PWD_LIST="$varname
 $___X_CMD_CD_PWD_LIST"
