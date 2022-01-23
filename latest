@@ -9,6 +9,12 @@
 # jump to a child folder: jc lib
 # jump to a father folder: jo opening; cd .
 
+# cd backward
+# cd forward = find
+# cd - = history in environment
+# cd <filename> = unmatch to search history or rules
+# cd ,<pattern> = find
+
 # cd /u/l/
 
 ___x_cmd_cd(){
@@ -20,21 +26,29 @@ ___x_cmd_cd(){
     fi
 
     case "$p" in
+
+        # alias
         "")      ___x_cmd_cd_origin              ;;
         ...)     ___x_cmd_cd_origin ../..        ;;
         ....)    ___x_cmd_cd_origin ../../../    ;;
-        ../*)    ___x_cmd_cd_back "${p#../}"     ;;
+
+        # cd back
+        .../*)    ___x_cmd_cd_back "${p#.../}"     ;;
+
+        # cd-forward
         ./*)     ___x_cmd_cd_choose "$(find . -name "*${p#./}*" -type d 2>/dev/null)" ;;
 
-        # Self defined documents
-        -%)
+        # cd: about history
+        --list-history)
             ___X_CMD_CD_HISTORY="$(printf "%s" "$___X_CMD_CD_HISTORY" | awk "$___X_CMD_AWK_CODE")"
             printf "%s\n" "$___X_CMD_CD_HISTORY"
             ;;
-        -/)
+        --clear-history)
             # very less used
             ___X_CMD_CD_HISTORY=
             ;;
+
+        # cd: history
         -)
             # cd to most recent
             ___x_cmd_cd_origin -
@@ -49,15 +63,17 @@ ___x_cmd_cd(){
 *}"
             ___x_cmd_cd_origin "$target"
             ;;
-        -*)
+        -*) # using the first match
             ___X_CMD_CD_HISTORY="$(printf "%s" "$___X_CMD_CD_HISTORY" | awk "$___X_CMD_AWK_CODE")"
             ___x_cmd_cd_origin "$(awk "FNR <= 1" <<A
 $(printf "%s" "$___X_CMD_CD_HISTORY" | grep "${p#-}")
 A
 )"
             ;;
-        :*)
-            p=${p#:}
+
+        # cd with find
+        ,*)
+            p=${p#,}
             local ans
             ans="$(find "$HOME" \
                 -path "$HOME/Library" -prune \
@@ -70,8 +86,10 @@ A
             fi
             ___x_cmd_cd_choose "$ans"
             ;;
+
         /*)    ___x_cmd_cd_choose "$(___x_cmd_cd_iter / "${p#/}")" ;;
         */*)   ___x_cmd_cd_choose "$(___x_cmd_cd_iter . "${p}")"   ;;
+
         *)
             ___X_CMD_CD_HISTORY="$(printf "%s" "$___X_CMD_CD_HISTORY" | awk "$___X_CMD_AWK_CODE")"
             ___x_cmd_cd_choose "$(printf "%s" "$___X_CMD_CD_HISTORY" | grep "${p#-}")"
