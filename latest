@@ -17,6 +17,16 @@
 
 # cd /u/l/
 
+___x_cmd_cd_set_domain(){
+    local varname="$1"
+    local value="$2"
+    # varname="$(printf "%s" "$1" | tr "[:lower:]" "[:upper:]")"  # optimized using bash/zsh inline
+    eval "___X_CMD_CD_PWD_$varname=\"$value\""
+    ___X_CMD_CD_PWD_LIST="$varname
+$___X_CMD_CD_PWD_LIST"
+    ___X_CMD_CD_PWD_LIST="$(printf "%s" "$___X_CMD_CD_PWD_LIST" | ___x_cmd_cd_util_uniq_head 32678)"
+}
+
 ___x_cmd_cd(){
     local p="$1"
 
@@ -41,9 +51,10 @@ ___x_cmd_cd(){
 
     # No such directory ... Then magic happens.
     case "$p" in
-        :*)
-
-            ;;
+        :)          printf "%s" "${___X_CMD_CD_PWD_LIST#
+}" ;;
+        :*/*)       ___x_cmd_cd_set_domain "${p%%/*}" "${p#:*/}" ;;
+        :*)         eval "printf '%s' \"\$___X_CMD_CD_PWD_${p}\"" ;;
 
         # cd back
         ...)     ___x_cmd_cd_origin ../..        ;;
@@ -56,7 +67,7 @@ ___x_cmd_cd(){
 
         # cd: about history
         --list-history)
-            ___X_CMD_CD_HISTORY="$(printf "%s" "$___X_CMD_CD_HISTORY" | awk "$___X_CMD_AWK_CODE")"
+            ___X_CMD_CD_HISTORY="$(printf "%s" "$___X_CMD_CD_HISTORY" | ___x_cmd_cd_util_uniq_head 200)"
             printf "%s\n" "$___X_CMD_CD_HISTORY"
             ;;
         --clear-history)
@@ -66,7 +77,7 @@ ___x_cmd_cd(){
 
         # cd: history
         --)
-            ___X_CMD_CD_HISTORY="$(printf "%s" "$___X_CMD_CD_HISTORY" | awk "$___X_CMD_AWK_CODE")"
+            ___X_CMD_CD_HISTORY="$(printf "%s" "$___X_CMD_CD_HISTORY" | ___x_cmd_cd_util_uniq_head 200)"
             local target="${___X_CMD_CD_HISTORY#*
 *
 }"
@@ -216,10 +227,12 @@ ___x_cmd_cd_iter()(
 
 mkdir -p "$___X_CMD_ROOT/.tmp/cd"
 
-___X_CMD_AWK_CODE='{
-    if (count > 200) { exit(exit_code); }
-    if (data[$0] == "") {
-        data[$0] = 1
+___x_cmd_cd_util_uniq_head(){
+    awk -v head="${1:-100}" '
+{
+    if (count > head) { exit(exit_code); }
+    if (uniq_map[$0] == "") {
+        uniq_map[$0] = 1
         print $0
         count = count + 1
     } else {
@@ -230,6 +243,7 @@ END {
     exit(exit_code)
 }
 '
+}
 
 ___x_cmd_cd_load_history(){
     if [ -f "$___X_CMD_ROOT/.tmp/cd/history" ]; then
