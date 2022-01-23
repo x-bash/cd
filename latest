@@ -9,6 +9,8 @@
 
 # cd /u/l/
 
+# Section: choose
+
 # TODO: better ui
 ___x_cmd_cd_choose(){
 
@@ -47,7 +49,10 @@ A
 )"
     fi
 }
+# EndSection
 
+
+# Section: cd back
 ___x_cmd_cd_back(){
     local p
     p="$(cd .. && pwd)"
@@ -79,17 +84,18 @@ END {
 )"; then
         ___x_cmd_cd_origin "$target"
     fi
-
 }
+# EndSection
 
+# Section: iter
 ___x_cmd_cd_iter()(
     local root="$1"
     local iter_path="$2"
- 
+
     ___x_cmd_cd_origin "$root" 2>/dev/null
 
     local cur="${iter_path%%/*}"
-    
+
     if [ "$cur" = "$iter_path" ]; then
         # this is final
         if [ "${cur%*}" = "$cur" ]; then
@@ -183,6 +189,7 @@ END {
 }
 ___x_cmd_cd_load_history
 
+# EndSection
 ___x_cmd_cd(){
     local p="$1"
 
@@ -197,17 +204,17 @@ ___x_cmd_cd(){
         ....)    ___x_cmd_cd_origin ../../../    ;;
         ../*)    ___x_cmd_cd_back "${p#../}"     ;;
         ./*)     ___x_cmd_cd_choose "$(find . -name "*${p#./}*" -type d 2>/dev/null)" ;;
-        
+
         # Self defined documents
-        -%)     
+        -%)
             ___X_CMD_CD_HISTORY="$(printf "%s" "$___X_CMD_CD_HISTORY" | awk "$___X_CMD_AWK_CODE")"
             printf "%s\n" "$___X_CMD_CD_HISTORY"
             ;;
-        -/) 
+        -/)
             # very less used
             ___X_CMD_CD_HISTORY=
             ;;
-        -) 
+        -)
             # cd to most recent
             ___x_cmd_cd_origin -
             ;;
@@ -226,7 +233,7 @@ ___x_cmd_cd(){
             ___x_cmd_cd_origin "$(awk "FNR <= 1" <<A
 $(printf "%s" "$___X_CMD_CD_HISTORY" | grep "${p#-}")
 A
-)"         
+)"
             ;;
         :*)
             p=${p#:}
@@ -251,6 +258,7 @@ A
     esac
 }
 
+# Section: advise
 ___x_cmd_cd_advise_candidates(){
     local can="$1"
     case "$can" in
@@ -278,5 +286,6 @@ A
 
     esac
 }
+# EndSection
 
 xrc setmain ___x_cmd_cd
