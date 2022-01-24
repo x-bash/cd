@@ -16,6 +16,7 @@
 # cd ,<pattern> = find
 
 # cd /u/l/
+xrc ui
 
 ___x_cmd_cd_set_domain(){
     local varname="$1"
