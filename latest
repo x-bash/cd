@@ -25,7 +25,7 @@ ___x_cmd_cd_set_domain(){
     # xrc "$varname"
     # if command "___x_cmd_$varname_cd" 2>/dev/
 
-    ___x_cmd_ldict_unshift  ___X_CMD_THEME_ENV "$varname" "$value"
+    ___x_cmd_ldict_unshift  ___X_CMD_PWD "$varname" "$value"
 }
 
 ___x_cmd_cd(){
@@ -55,7 +55,7 @@ ___x_cmd_cd(){
         :)          printf "%s" "${___X_CMD_CD_PWD_LIST#
 }" ;;
         :*/*)     p=${p#:} ; ___x_cmd_cd_set_domain "${p%%/*}" "${p#*/}" ;;
-        :*)       p=${p#:} ; ___x_cmd_ldict_get ___X_CMD_THEME_ENV "${p%%/*}" ;;
+        :*)       p=${p#:} ; ___x_cmd_ldict_get ___X_CMD_PWD "${p%%/*}" ;;
 
         # cd back
         ...)     ___x_cmd_cd_origin ../..        ;;
