@@ -134,33 +134,16 @@ ___x_cmd_cd_choose(){
     fi
 
     local adir
-    local i=1
-    local text=
-
+    local text="ui sel \"text\" \"Which to cd into:\""
     local IFS="
 "
     while read -r adir; do
-        text="$text$(printf "%s.\t%s\n" "$i" "$adir")
-"
-        i=$((i+1))
+        text="$text \\
+\"$adir\" "
     done <<A
 $1
 A
-    if [ "$i" -eq 2 ]; then
-        ___x_cmd_cd_origin "$1"
-        return
-    fi
-
-    printf "%s" "$text"
-
-    printf "...Which to cd into: "
-    read -r ans
-    if [ "$ans" -ge 1 ] 2>/dev/null && [ "$ans" -lt "$i" ] 2>/dev/null ; then
-        ___x_cmd_cd_origin "$(awk -v target="$ans"  'NR==target{ print $0 }'<<A
-$1
-A
-)"
-    fi
+    ___x_cmd_cd_origin "$(eval "$text")"
 }
 # EndSection
 
