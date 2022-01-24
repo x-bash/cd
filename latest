@@ -25,10 +25,7 @@ ___x_cmd_cd_set_domain(){
     # xrc "$varname"
     # if command "___x_cmd_$varname_cd" 2>/dev/
 
-    eval "___X_CMD_CD_PWD_$varname=\"$value\""
-    ___X_CMD_CD_PWD_LIST="$varname
-$___X_CMD_CD_PWD_LIST"
-    ___X_CMD_CD_PWD_LIST="$(printf "%s" "$___X_CMD_CD_PWD_LIST" | ___x_cmd_cd_util_uniq_head 32678)"
+    ___x_cmd_ldict_unshift  ___X_CMD_THEME_ENV "$varname" "$value"
 }
 
 ___x_cmd_cd(){
@@ -57,8 +54,8 @@ ___x_cmd_cd(){
     case "$p" in
         :)          printf "%s" "${___X_CMD_CD_PWD_LIST#
 }" ;;
-        :*/*)       ___x_cmd_cd_set_domain "${p%%/*}" "${p#:*/}" ;;
-        :*)         eval "printf '%s' \"\$___X_CMD_CD_PWD_${p}\"" ;;
+        :*/*)     p=${p#:} ; ___x_cmd_cd_set_domain "${p%%/*}" "${p#*/}" ;;
+        :*)       p=${p#:} ; ___x_cmd_ldict_get ___X_CMD_THEME_ENV "${p%%/*}" ;;
 
         # cd back
         ...)     ___x_cmd_cd_origin ../..        ;;
