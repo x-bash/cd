@@ -149,7 +149,7 @@ A
 \"---\"
 "
     eval "$text"
-    ___x_cmd_cd_origin "$___X_CMD_UI_SELECT_CURENT_ITEM"
+    ___x_cmd_cd_origin "$___X_CMD_UI_SELECT_CURRENT_ITEM"
 }
 # EndSection
 
